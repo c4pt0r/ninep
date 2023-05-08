@@ -16,8 +16,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Harvey-OS/ninep/pkg/debugfs"
-	"github.com/Harvey-OS/ninep/protocol"
+	"github.com/c4pt0r/ninep/pkg/debugfs"
+	"github.com/c4pt0r/ninep/protocol"
 )
 
 type file struct {

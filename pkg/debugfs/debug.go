@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"log"
 
-	"github.com/Harvey-OS/ninep/protocol"
+	"github.com/c4pt0r/ninep/protocol"
 )
 
 type DebugFileServer struct {

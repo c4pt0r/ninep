@@ -4,6 +4,7 @@
 // This code is imported from the old ninep repo,
 // with some changes.
 
+//go:build !windows
 // +build !windows
 
 package ufs
@@ -12,7 +13,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/Harvey-OS/ninep/protocol"
+	"github.com/c4pt0r/ninep/protocol"
 )
 
 func fileInfoToQID(d os.FileInfo) protocol.QID {
