@@ -256,7 +256,6 @@ func (e *FileServer) Rwstat(fid protocol.FID, b []byte) error {
 	// Try to find local uid, gid by name.
 	if dir.User != "" || dir.Group != "" {
 		return fmt.Errorf("Permission denied")
-		changed = true
 	}
 
 	/*
@@ -416,7 +415,6 @@ func (e *FileServer) Rread(fid protocol.FID, o protocol.Offset, c protocol.Count
 			// What does work is returning one thing so, for now, do that.
 			return b.Bytes(), nil
 		}
-		return b.Bytes(), nil
 	}
 
 	// N.B. even if they ask for 0 bytes on some file systems it is important to pass
