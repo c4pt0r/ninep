@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	user = flag.String("user", "harvey", "Default user name")
+	user = flag.String("user", "glenda", "Default user name")
 )
 
 func modeToUnixFlags(mode protocol.Mode) int {
