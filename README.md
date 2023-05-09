@@ -3,6 +3,8 @@ Package for implementing clients and servers of the 9P and 9P2000 distributed re
 
 ## Usage
 
+
+```
 $ go build ./cmd/ufs/ufs.go
 
 $ ./ufs -h
@@ -21,3 +23,4 @@ Usage of ./ufs:
     	Default user name (default "glenda")
 
 $ ./ufs  ./ufs -debug 1 -root <dir> -readonly
+```
