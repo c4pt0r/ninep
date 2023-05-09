@@ -36,6 +36,9 @@ type FileServer struct {
 	Versioned bool
 	IOunit    protocol.MaxSize
 
+	// readonly mode
+	readonly bool
+
 	// mu guards below
 	mu    sync.Mutex
 	files map[protocol.FID]*file
@@ -44,6 +47,8 @@ type FileServer struct {
 var (
 	debug = flag.Int("debug", 0, "print debug messages")
 	root  = flag.String("root", "/", "Set the root for all attaches")
+
+	readOnly = flag.Bool("readonly", false, "Set the filesystem to readonly")
 )
 
 func stat(s string) (*protocol.Dir, protocol.QID, error) {
@@ -178,6 +183,9 @@ func (e *FileServer) Ropen(fid protocol.FID, mode protocol.Mode) (protocol.QID, 
 	return f.QID, e.IOunit, nil
 }
 func (e *FileServer) Rcreate(fid protocol.FID, name string, perm protocol.Perm, mode protocol.Mode) (protocol.QID, protocol.MaxSize, error) {
+	if e.readonly {
+		return protocol.QID{}, 0, fmt.Errorf("read only")
+	}
 	f, err := e.getFile(fid)
 	if err != nil {
 		return protocol.QID{}, 0, err
@@ -236,6 +244,9 @@ func (e *FileServer) Rstat(fid protocol.FID) ([]byte, error) {
 	return b.Bytes(), nil
 }
 func (e *FileServer) Rwstat(fid protocol.FID, b []byte) error {
+	if e.readonly {
+		return fmt.Errorf("read only")
+	}
 	var changed bool
 	f, err := e.getFile(fid)
 	if err != nil {
@@ -357,6 +368,9 @@ func (e *FileServer) Rremove(fid protocol.FID) error {
 	if err != nil {
 		return err
 	}
+	if e.readonly {
+		return fmt.Errorf("read only")
+	}
 	return os.Remove(f.fullName)
 }
 
@@ -428,6 +442,9 @@ func (e *FileServer) Rread(fid protocol.FID, o protocol.Offset, c protocol.Count
 }
 
 func (e *FileServer) Rwrite(fid protocol.FID, o protocol.Offset, b []byte) (protocol.Count, error) {
+	if e.readonly {
+		return -1, fmt.Errorf("read only")
+	}
 	f, err := e.getFile(fid)
 	if err != nil {
 		return -1, err
@@ -446,7 +463,9 @@ func (e *FileServer) Rwrite(fid protocol.FID, o protocol.Offset, b []byte) (prot
 
 func NewUFS(opts ...protocol.ListenerOpt) (*protocol.Listener, error) {
 	nsCreator := func() protocol.NineServer {
-		f := &FileServer{}
+		f := &FileServer{
+			readonly: *readOnly,
+		}
 		f.files = make(map[protocol.FID]*file)
 		f.rootPath = *root // for now.
 		f.IOunit = 8192
